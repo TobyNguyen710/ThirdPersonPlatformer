@@ -4,6 +4,8 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private InputManager inputManager;
     [SerializeField] private float speed;
+    [SerializeField] private float speedLimit;
+    [SerializeField] private Transform moveIndicator;
 
     private Rigidbody rb;
 
@@ -22,7 +24,24 @@ public class Player : MonoBehaviour
     }
     private void MovePlayer(Vector3 direction)
     {
-        Vector3 moveDirection = new(direction.x, direction.y, direction.z);
-        rb.AddForce(speed * moveDirection);
+        // Vector3 moveDirection = new(direction.x, direction.y, direction.z);
+        // rb.AddForce(speed * moveIndicator.forward * moveDirection.z);
+        // rb.AddForce(speed * moveIndicator.right * moveDirection.x);
+
+
+        // Calculate the desired force based on the direction the player is facing
+        Vector3 desiredDirectionZ = moveIndicator.forward * direction.z * speed;
+        Vector3 desiredDirectionX = moveIndicator.right * direction.x * speed;
+
+
+        // Apply the force to the rigidbody in the desired direction
+        rb.AddForce(desiredDirectionZ);
+        rb.AddForce(desiredDirectionX);
+        //make sure the player is facing the right direction
+        // Limit the speed by clamping the velocity directly
+        if (rb.linearVelocity.magnitude > speedLimit)
+        {
+            rb.linearVelocity = rb.linearVelocity.normalized * speedLimit;
+        }
     }
 }
