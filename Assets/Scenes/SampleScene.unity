@@ -756,7 +756,7 @@ GameObject:
   - component: {fileID: 1448873977}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1045,8 +1045,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputManager: {fileID: 1631825172}
-  speed: 5
-  speedLimit: 20
+  speed: 10
+  speedLimit: 15
+  jumpForce: 10
   moveIndicator: {fileID: 1173765257}
 --- !u!54 &2107279270
 Rigidbody:
@@ -1056,9 +1057,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2107279268}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 1.8
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

@@ -5,9 +5,13 @@ public class Player : MonoBehaviour
     [SerializeField] private InputManager inputManager;
     [SerializeField] private float speed;
     [SerializeField] private float speedLimit;
+    [SerializeField] private float jumpForce;
+
     [SerializeField] private Transform moveIndicator;
 
     private Rigidbody rb;
+    private bool isGrounded;
+    private bool doubleJumpable;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -15,6 +19,7 @@ public class Player : MonoBehaviour
         //Adding MovePlayer as a listener to the OnMove event
         inputManager.OnMove.AddListener(MovePlayer);
         rb = GetComponent<Rigidbody>();
+        inputManager.OnSpacePressed.AddListener(Jump);
     }
 
     // Update is called once per frame
@@ -44,4 +49,27 @@ public class Player : MonoBehaviour
             rb.linearVelocity = rb.linearVelocity.normalized * speedLimit;
         }
     }
+    private void Jump()
+    {
+        if (isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isGrounded = false;
+        }
+        else if (doubleJumpable)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            doubleJumpable = false;
+        }
+        
+    }
+    // Check if the player is on the ground
+    private void OnCollisionEnter(Collision collision)
+{
+    if (collision.gameObject.CompareTag("Ground"))
+    {
+        isGrounded = true;
+        doubleJumpable = true;
+    }
+}
 }
