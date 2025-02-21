@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         //Adding MovePlayer as a listener to the OnMove event
         inputManager.OnMove.AddListener(MovePlayer);
         rb = GetComponent<Rigidbody>();
