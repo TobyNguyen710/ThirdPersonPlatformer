@@ -1,3 +1,5 @@
+using System.Collections;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -6,12 +8,15 @@ public class Player : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float speedLimit;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float dashDuration;
+    [SerializeField] private float dashSpeed;
 
     [SerializeField] private Transform moveIndicator;
 
     private Rigidbody rb;
     private bool isGrounded;
-    private bool doubleJumpable;
+    private bool isDoubleJumping;
+    private bool dashing = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,6 +26,7 @@ public class Player : MonoBehaviour
         inputManager.OnMove.AddListener(MovePlayer);
         rb = GetComponent<Rigidbody>();
         inputManager.OnSpacePressed.AddListener(Jump);
+        inputManager.OnDash.AddListener(direction => StartCoroutine(DashPlayer(direction)));
     }
 
     // Update is called once per frame
@@ -35,20 +41,50 @@ public class Player : MonoBehaviour
         // rb.AddForce(speed * moveIndicator.right * moveDirection.x);
 
 
-        // Calculate the desired force based on the direction the player is facing
-        Vector3 desiredDirectionZ = moveIndicator.forward * direction.z * speed;
-        Vector3 desiredDirectionX = moveIndicator.right * direction.x * speed;
+        if (direction.magnitude > 0) {
+            // Calculate the desired force based on the direction the player is facing
+            Vector3 desiredDirectionZ = moveIndicator.forward * direction.z * speed;
+            Vector3 desiredDirectionX = moveIndicator.right * direction.x * speed;
 
 
-        // Apply the force to the rigidbody in the desired direction
-        rb.AddForce(desiredDirectionZ);
-        rb.AddForce(desiredDirectionX);
-        //make sure the player is facing the right direction
-        // Limit the speed by clamping the velocity directly
-        if (rb.linearVelocity.magnitude > speedLimit)
-        {
-            rb.linearVelocity = rb.linearVelocity.normalized * speedLimit;
+            // Apply the force to the rigidbody in the desired direction
+            rb.AddForce(desiredDirectionZ);
+            rb.AddForce(desiredDirectionX);
+            //make sure the player is facing the right direction
+            // Limit the speed by clamping the velocity directly
+            if ((rb.linearVelocity.magnitude > speedLimit) && !dashing)
+            {
+                rb.linearVelocity = rb.linearVelocity.normalized * speedLimit;
+            }
+        } else {    // If the player is not moving, stop the player immediately to make it responsive 
+            if (!dashing)
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
         }
+
+    }
+    private IEnumerator DashPlayer(Vector3 direction)
+    {
+        // Vector3 moveDirection = new(direction.x, direction.y, direction.z);
+        // rb.AddForce(speed * moveIndicator.forward * moveDirection.z);
+        // rb.AddForce(speed * moveIndicator.right * moveDirection.x);
+
+            dashing = true;
+            // Calculate the desired force based on the direction the player is facing
+            Vector3 desiredDirectionZ = moveIndicator.forward * direction.z * dashSpeed;
+            Vector3 desiredDirectionX = moveIndicator.right * direction.x * dashSpeed;
+
+
+            // Apply the force to the rigidbody in the desired direction
+            rb.AddForce(desiredDirectionZ, ForceMode.Impulse);
+            rb.AddForce(desiredDirectionX, ForceMode.Impulse);
+            //make sure the player is facing the right direction
+            yield return new WaitForSeconds(dashDuration);
+
+            Debug.Log("Dash ended");
+            dashing = false;
+            // rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+
+
     }
     private void Jump()
     {
@@ -57,10 +93,10 @@ public class Player : MonoBehaviour
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isGrounded = false;
         }
-        else if (doubleJumpable)
+        else if (!isDoubleJumping)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            doubleJumpable = false;
+            isDoubleJumping = true;
         }
         
     }
@@ -70,7 +106,7 @@ public class Player : MonoBehaviour
     if (collision.gameObject.CompareTag("Ground"))
     {
         isGrounded = true;
-        doubleJumpable = true;
+        isDoubleJumping = false;
     }
 }
 }

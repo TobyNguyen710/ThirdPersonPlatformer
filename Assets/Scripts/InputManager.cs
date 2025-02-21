@@ -5,12 +5,14 @@ public class InputManager : MonoBehaviour
  {
     public UnityEvent OnSpacePressed = new UnityEvent();
     public UnityEvent<Vector3> OnMove = new UnityEvent<Vector3>();
+    public UnityEvent<Vector3> OnDash = new UnityEvent<Vector3>();
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             OnSpacePressed?.Invoke();
         }
+        
 
         //Movement
         Vector3 input = Vector3.zero;
@@ -31,5 +33,10 @@ public class InputManager : MonoBehaviour
             input += Vector3.right;
         }
         OnMove?.Invoke(input);
+
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            OnDash?.Invoke(input);
+        }
     }
  }
