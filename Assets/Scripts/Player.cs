@@ -51,12 +51,12 @@ public class Player : MonoBehaviour
             rb.AddForce(desiredDirectionZ);
             rb.AddForce(desiredDirectionX);
             //make sure the player is facing the right direction
-            // Limit the speed by clamping the velocity directly
-            if ((rb.linearVelocity.magnitude > speedLimit) && !dashing)
+            // Limit the speed by clamping the velocity directly however, if the player is dashing, don't limit the speed
+            if ((rb.linearVelocity.magnitude > speedLimit) && !dashing) 
             {
                 rb.linearVelocity = rb.linearVelocity.normalized * speedLimit;
             }
-        } else {    // If the player is not moving, stop the player immediately to make it responsive 
+        } else {    // If the player is not moving, stop the player immediately to make it responsive however, if the player is dashing, don't stop the player
             if (!dashing)
                 rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
         }
