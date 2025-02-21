@@ -1,8 +1,10 @@
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private int score;
+    [SerializeField] private TextMeshProUGUI scoreText;
     private CoinTrigger[] coins;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,6 +24,7 @@ public class GameManager : MonoBehaviour
     private void IncrementScore()
     {
         score++;
-        Debug.Log("Score: " + score);
+        scoreText.text = $"Score:  {score}";
+        //Debug.Log("Score: " + score);
     }
 }
